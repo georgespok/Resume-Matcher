@@ -117,15 +117,15 @@ export const ResumeModern: React.FC<ResumeModernProps> = ({
                   <div
                     className={`flex justify-between items-baseline ${baseStyles['resume-row-tight']}`}
                   >
-                    <h4 className={baseStyles['resume-item-title']}>{exp.title}</h4>
-                    <span className={`${baseStyles['resume-date']} ml-4`}>
+                    <h4 className={baseStyles['resume-item-title']}>{exp.company}</h4>
+                    <span className={`${baseStyles['resume-item-date']} ml-4`}>
                       {formatDateRange(exp.years)}
                     </span>
                   </div>
                   <div
                     className={`flex justify-between items-center ${baseStyles['resume-row']} ${baseStyles['resume-item-subtitle']}`}
                   >
-                    <span>{exp.company}</span>
+                    <span>{exp.title}</span>
                     {exp.location && <span>{exp.location}</span>}
                   </div>
                   {exp.description && exp.description.length > 0 && (

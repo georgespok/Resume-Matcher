@@ -94,8 +94,8 @@ export const SkillCategoryRows: React.FC<SkillCategoryRowsProps> = ({
         {label && <div className="font-bold">{label}</div>}
         <div className="min-w-0 space-y-0.5">
           {categories.map((category, categoryIndex) => (
-            <div key={`${category.name}-${categoryIndex}`} className="min-w-0">
-              <span className="font-bold">{category.name}: </span>
+            <div key={`${category.name}-${categoryIndex}`} className="flex min-w-0">
+              <span className="font-bold w-32 shrink-0">{category.name}:</span>
               <span>{category.skills.join(', ')}</span>
             </div>
           ))}

@@ -175,8 +175,8 @@ export const ResumeModernTwoColumn: React.FC<ResumeModernTwoColumnProps> = ({
                     <div
                       className={`flex justify-between items-baseline ${baseStyles['resume-row-tight']}`}
                     >
-                      <h4 className={baseStyles['resume-item-title-sm']}>{exp.title}</h4>
-                      <span className={`${baseStyles['resume-date']} ml-4`}>
+                      <h4 className={baseStyles['resume-item-title-sm']}>{exp.company}</h4>
+                      <span className={`${baseStyles['resume-item-date-sm']} ml-4`}>
                         {formatDateRange(exp.years)}
                       </span>
                     </div>
@@ -185,7 +185,7 @@ export const ResumeModernTwoColumn: React.FC<ResumeModernTwoColumnProps> = ({
                       className={`flex justify-between items-center ${baseStyles['resume-row-tight']} ${baseStyles['resume-item-subtitle-sm']}`}
                     >
                       <span>
-                        {exp.company}
+                        {exp.title}
                         {exp.location && <> • {exp.location}</>}
                       </span>
                     </div>

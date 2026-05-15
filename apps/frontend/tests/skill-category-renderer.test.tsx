@@ -44,7 +44,7 @@ describe('skill category rendering', () => {
     expect(screen.queryByText('Technical Skills:')).not.toBeInTheDocument();
     expect(screen.getByText('Languages:', { exact: false })).toBeInTheDocument();
     expect(screen.getByText('DevOps:', { exact: false })).toBeInTheDocument();
-    expect(container.querySelector('.font-bold.w-32')).not.toBeInTheDocument();
+    expect(container.querySelectorAll('.font-bold.w-32')).toHaveLength(2);
   });
 
   it('renders the flat skill list when no valid categories exist', () => {

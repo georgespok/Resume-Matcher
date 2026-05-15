@@ -65,6 +65,26 @@
   text-align: right;
 }
 
+.resume-item-date {
+  font-family: var(--body-font);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--resume-text-primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.resume-item-date-sm {
+  font-family: var(--body-font);
+  font-size: calc(var(--font-size-base) * 0.9);
+  font-weight: 700;
+  color: var(--resume-text-primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-align: right;
+}
+
 .resume-text {
   font-family: var(--body-font);
 }
