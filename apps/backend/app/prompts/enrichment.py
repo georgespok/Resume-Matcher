@@ -190,6 +190,7 @@ OUTPUT FORMAT (JSON only):
 
 RULES:
 - Keep skills concise and industry-standard
-- Group similar technologies if appropriate
+- Return atomic skill or technology names only, not sentences or descriptions
+- Do not group several skills into one prose item
 - Prioritize most relevant skills based on feedback
 - Only include skills that already exist in CURRENT SKILLS or are explicitly provided in USER'S FEEDBACK"""

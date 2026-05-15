@@ -11,6 +11,16 @@ interface SkillCategoryRowsProps extends SkillCategoryInput {
   label?: string;
 }
 
+const InlineBulletRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+  <li className="flex min-w-0">
+    <span className="mr-1.5 flex-shrink-0">•&nbsp;</span>
+    <span className="min-w-0">
+      <span className="font-bold">{label}: </span>
+      <span>{value}</span>
+    </span>
+  </li>
+);
+
 function cleanStringList(values?: string[]): string[] {
   if (!Array.isArray(values)) return [];
   return values.map((value) => value.trim()).filter(Boolean);
@@ -92,14 +102,15 @@ export const SkillCategoryRows: React.FC<SkillCategoryRowsProps> = ({
     return (
       <div className="space-y-0.5">
         {label && <div className="font-bold">{label}</div>}
-        <div className="min-w-0 space-y-0.5">
+        <ul className={`min-w-0 ${baseStyles['resume-list']}`}>
           {categories.map((category, categoryIndex) => (
-            <div key={`${category.name}-${categoryIndex}`} className="flex min-w-0">
-              <span className="font-bold w-32 shrink-0">{category.name}:</span>
-              <span>{category.skills.join(', ')}</span>
-            </div>
+            <InlineBulletRow
+              key={`${category.name}-${categoryIndex}`}
+              label={category.name}
+              value={category.skills.join(', ')}
+            />
           ))}
-        </div>
+        </ul>
       </div>
     );
   }
@@ -123,23 +134,15 @@ export const SkillCategoryPillGroups: React.FC<SkillCategoryInput> = ({
 
   if (categories.length > 0) {
     return (
-      <div className={baseStyles['resume-stack-tight']}>
+      <ul className={`${baseStyles['resume-list']} ${baseStyles['resume-text-xs']}`}>
         {categories.map((category, categoryIndex) => (
-          <div key={`${category.name}-${categoryIndex}`}>
-            <p className={`${baseStyles['resume-meta-sm']} font-bold uppercase`}>{category.name}</p>
-            <div className="flex flex-wrap gap-1">
-              {category.skills.map((skill, skillIndex) => (
-                <span
-                  key={`${category.name}-${skill}-${skillIndex}`}
-                  className={baseStyles['resume-skill-pill']}
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
+          <InlineBulletRow
+            key={`${category.name}-${categoryIndex}`}
+            label={category.name}
+            value={category.skills.join(', ')}
+          />
         ))}
-      </div>
+      </ul>
     );
   }
 

@@ -60,7 +60,10 @@ from app.services.cover_letter import (
     generate_outreach_message,
     generate_resume_title,
 )
-from app.services.skill_categorizer import categorize_resume_skills
+from app.services.skill_categorizer import (
+    categorize_resume_skills,
+    normalize_resume_skill_data,
+)
 from app.prompts import DEFAULT_IMPROVE_PROMPT_ID, IMPROVE_PROMPT_OPTIONS
 
 
@@ -626,6 +629,7 @@ async def get_resume(resume_id: str = Query(...)) -> ResumeFetchResponse:
     # Apply lazy migration - add section metadata to old resumes
     if processed_data:
         processed_data = normalize_resume_data(processed_data)
+        processed_data = normalize_resume_skill_data(processed_data)
 
     processed_resume = (
         ResumeData.model_validate(processed_data) if processed_data else None

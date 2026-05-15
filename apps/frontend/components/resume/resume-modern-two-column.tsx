@@ -159,7 +159,7 @@ export const ResumeModernTwoColumn: React.FC<ResumeModernTwoColumnProps> = ({
               <h3 className={styles.sectionTitleAccent}>
                 {getSectionDisplayName('summary', headingFallbacks.summary)}
               </h3>
-              <p className={`text-justify ${baseStyles['resume-text']}`}>{summary}</p>
+              <p className={baseStyles['resume-text']}>{summary}</p>
             </div>
           )}
 

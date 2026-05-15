@@ -437,7 +437,8 @@ Rules:
 3. You may include JD skills that are missing from the resume skills list.
 4. Do not include skills unrelated to the JD.
 5. Do not include certifications.
-6. Generate reasons in {output_language}.
+6. Use concise skill names only, not sentence-style skills or descriptions.
+7. Generate reasons in {output_language}.
 
 Existing resume skills:
 {existing_skills}
@@ -471,9 +472,11 @@ Rules:
 2. Preserve each skill's exact spelling, casing, punctuation, and wording.
 3. Do not add, remove, rename, merge, translate, or split skills.
 4. Do not include certifications, languages, awards, or prose descriptions.
-5. Create 2-6 useful categories when possible; use fewer when the input is short.
-6. Category names must be concise and written in {output_language}.
-7. If a skill does not clearly fit a specific group, place it in "Other Skills".
+5. Use concise category names such as Cloud & IaC, Back-end, Front-end, Data, DevOps & CI/CD, Agile, Architecture and Standards, Security, Integration, Monitoring and Reliability.
+6. Do not create mixed category names like "Data & Messaging"; put data stores in Data and messaging/integration tools in Cloud & IaC or Integration.
+7. Create 2-6 useful categories when possible; use fewer when the input is short.
+8. Category names must be concise and written in {output_language}.
+9. If a skill does not clearly fit a specific group, place it in "Other Skills".
 
 Input skills:
 {skills}

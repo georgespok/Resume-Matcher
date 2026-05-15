@@ -102,7 +102,7 @@ export const ResumeSingleColumn: React.FC<ResumeSingleColumnProps> = ({
         return (
           <div key={section.id} className={baseStyles['resume-section']}>
             <h3 className={baseStyles['resume-section-title']}>{section.displayName}</h3>
-            <p className={`text-justify ${baseStyles['resume-text']}`}>{summary}</p>
+            <p className={baseStyles['resume-text']}>{summary}</p>
           </div>
         );
 
@@ -396,20 +396,29 @@ const AdditionalSection: React.FC<{
         <SkillCategoryRows technicalSkills={technicalSkills} skillCategories={skillCategories} />
         {languages.length > 0 && (
           <div className="flex">
-            <span className="font-bold w-32 shrink-0">{mergedLabels.languages}</span>
-            <span>{languages.join(', ')}</span>
+            <span className="mr-1.5 flex-shrink-0">•&nbsp;</span>
+            <span>
+              <span className="font-bold">{mergedLabels.languages} </span>
+              <span>{languages.join(', ')}</span>
+            </span>
           </div>
         )}
         {certificationsTraining.length > 0 && (
           <div className="flex">
-            <span className="font-bold w-32 shrink-0">{mergedLabels.certifications}</span>
-            <span>{certificationsTraining.join(', ')}</span>
+            <span className="mr-1.5 flex-shrink-0">•&nbsp;</span>
+            <span>
+              <span className="font-bold">{mergedLabels.certifications} </span>
+              <span>{certificationsTraining.join(', ')}</span>
+            </span>
           </div>
         )}
         {awards.length > 0 && (
           <div className="flex">
-            <span className="font-bold w-32 shrink-0">{mergedLabels.awards}</span>
-            <span>{awards.join(', ')}</span>
+            <span className="mr-1.5 flex-shrink-0">•&nbsp;</span>
+            <span>
+              <span className="font-bold">{mergedLabels.awards} </span>
+              <span>{awards.join(', ')}</span>
+            </span>
           </div>
         )}
       </div>
