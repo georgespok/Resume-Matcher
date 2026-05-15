@@ -114,6 +114,7 @@ const ResumeBuilderContent = () => {
   const [, setLoadingState] = useState<'idle' | 'loading' | 'loaded' | 'error'>('idle');
   const [templateSettings, setTemplateSettings] =
     useState<TemplateSettings>(DEFAULT_TEMPLATE_SETTINGS);
+  const [isTemplateSettingsHydrated, setIsTemplateSettingsHydrated] = useState(false);
   const { improvedData } = useResumePreview();
   const improvedPreview = improvedData?.data?.resume_preview;
   const improvedCoverLetter = improvedData?.data?.cover_letter;
@@ -259,12 +260,16 @@ const ResumeBuilderContent = () => {
         // Use defaults
       }
     }
+    setIsTemplateSettingsHydrated(true);
   }, []);
 
   // Save template settings to localStorage when they change
   useEffect(() => {
+    if (!isTemplateSettingsHydrated) {
+      return;
+    }
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(templateSettings));
-  }, [templateSettings]);
+  }, [isTemplateSettingsHydrated, templateSettings]);
 
   // Warn user before leaving with unsaved changes
   useEffect(() => {
