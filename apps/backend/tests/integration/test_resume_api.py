@@ -1,5 +1,6 @@
 """Integration tests for resume CRUD endpoints."""
 
+import copy
 from unittest.mock import patch, AsyncMock, MagicMock
 from uuid import uuid4
 
@@ -146,6 +147,49 @@ class TestUpdateOutreachMessage:
         async with client:
             resp = await client.patch("/api/v1/resumes/res-123/outreach-message", json={"content": "Hi, I saw your posting..."})
         assert resp.status_code == 200
+
+
+class TestUpdateResume:
+    """PATCH /api/v1/resumes/{resume_id}."""
+
+    @patch("app.routers.resumes.categorize_resume_skills", new_callable=AsyncMock)
+    @patch("app.routers.resumes.db")
+    async def test_update_resume_persists_skill_categories(
+        self,
+        mock_db,
+        mock_categorize,
+        client,
+        mock_resume_record,
+        sample_resume,
+    ):
+        categorized = copy.deepcopy(sample_resume)
+        categorized["additional"]["skillCategories"] = [
+            {"name": "Backend", "skills": ["Python", "FastAPI"]},
+            {"name": "Cloud & Data", "skills": ["Docker", "AWS", "PostgreSQL", "Redis"]},
+        ]
+
+        mock_db.get_resume.return_value = mock_resume_record
+        mock_categorize.return_value = categorized
+        mock_db.update_resume.return_value = {
+            **mock_resume_record,
+            "content": "{}",
+            "content_type": "json",
+            "processed_data": categorized,
+            "processing_status": "ready",
+        }
+
+        async with client:
+            resp = await client.patch("/api/v1/resumes/res-123", json=sample_resume)
+
+        assert resp.status_code == 200
+        updated_data = mock_db.update_resume.call_args.args[1]["processed_data"]
+        assert updated_data["additional"]["skillCategories"] == categorized["additional"][
+            "skillCategories"
+        ]
+        response_data = resp.json()["data"]["processed_resume"]
+        assert response_data["additional"]["skillCategories"] == categorized["additional"][
+            "skillCategories"
+        ]
 
 
 class TestRetryProcessing:

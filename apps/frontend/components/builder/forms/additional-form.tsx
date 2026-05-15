@@ -13,9 +13,10 @@ interface AdditionalFormProps {
 
 export const AdditionalForm: React.FC<AdditionalFormProps> = ({ data, onChange }) => {
   const { t } = useTranslations();
+  type StringListField = 'technicalSkills' | 'languages' | 'certificationsTraining' | 'awards';
 
   // Helper to handle array conversions (text -> string[])
-  const handleArrayChange = (field: keyof AdditionalInfo, value: string) => {
+  const handleArrayChange = (field: StringListField, value: string) => {
     // Split by newlines only (preserving spaces within items)
     const items = value.split('\n').filter((item) => item.trim() !== '');
     onChange({

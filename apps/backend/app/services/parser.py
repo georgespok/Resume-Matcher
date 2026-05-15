@@ -12,6 +12,8 @@ from app.llm import complete_json, get_llm_config, get_model_name, get_safe_max_
 from app.prompts import PARSE_RESUME_PROMPT
 from app.prompts.templates import RESUME_SCHEMA_EXAMPLE
 from app.schemas import ResumeData
+from app.config_cache import get_content_language
+from app.services.skill_categorizer import categorize_resume_skills
 
 logger = logging.getLogger(__name__)
 
@@ -173,4 +175,8 @@ async def parse_resume_to_json(markdown_text: str) -> dict[str, Any]:
 
     # Validate against schema
     validated = ResumeData.model_validate(result)
-    return validated.model_dump()
+    categorized = await categorize_resume_skills(
+        validated.model_dump(),
+        language=get_content_language(),
+    )
+    return ResumeData.model_validate(categorized).model_dump()

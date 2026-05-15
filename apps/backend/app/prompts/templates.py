@@ -64,6 +64,10 @@ RESUME_SCHEMA_EXAMPLE = """{
   ],
   "additional": {
     "technicalSkills": ["Python", "JavaScript", "AWS", "Docker"],
+    "skillCategories": [
+      {"name": "Programming Languages", "skills": ["Python", "JavaScript"]},
+      {"name": "Cloud & DevOps", "skills": ["AWS", "Docker"]}
+    ],
     "languages": ["English (Native)", "Spanish (Conversational)"],
     "certificationsTraining": ["AWS Solutions Architect"],
     "awards": ["Employee of the Year 2022"]
@@ -127,6 +131,10 @@ IMPROVE_SCHEMA_EXAMPLE = """{
   ],
   "additional": {
     "technicalSkills": ["Python", "JavaScript", "AWS", "Docker"],
+    "skillCategories": [
+      {"name": "Programming Languages", "skills": ["Python", "JavaScript"]},
+      {"name": "Cloud & DevOps", "skills": ["AWS", "Docker"]}
+    ],
     "languages": ["English (Native)", "Spanish (Conversational)"],
     "certificationsTraining": ["AWS Solutions Architect"],
     "awards": ["Employee of the Year 2022"]
@@ -452,6 +460,35 @@ Output this exact JSON format:
     }}
   ],
   "strategy_notes": "brief notes for the next editing pass"
+}}"""
+
+CATEGORIZE_SKILLS_PROMPT = """Group this resume's technical skills into concise presentation categories.
+
+Return ONLY a JSON object. Do not rewrite the resume.
+
+Rules:
+1. Use every input skill exactly once.
+2. Preserve each skill's exact spelling, casing, punctuation, and wording.
+3. Do not add, remove, rename, merge, translate, or split skills.
+4. Do not include certifications, languages, awards, or prose descriptions.
+5. Create 2-6 useful categories when possible; use fewer when the input is short.
+6. Category names must be concise and written in {output_language}.
+7. If a skill does not clearly fit a specific group, place it in "Other Skills".
+
+Input skills:
+{skills}
+
+Limited resume context:
+{resume_context}
+
+Output this exact JSON format, nothing else:
+{{
+  "categories": [
+    {{
+      "name": "category name",
+      "skills": ["Exact Skill 1", "Exact Skill 2"]
+    }}
+  ]
 }}"""
 
 DIFF_IMPROVE_PROMPT = """Given this resume and job description, output a JSON object with targeted changes to better align the resume with the job.

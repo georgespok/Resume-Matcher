@@ -38,8 +38,14 @@ export interface ProjectEntry {
   description: string[];
 }
 
+export interface SkillCategory {
+  name: string;
+  skills: string[];
+}
+
 export interface AdditionalInfo {
   technicalSkills: string[];
+  skillCategories?: SkillCategory[];
   languages: string[];
   certificationsTraining: string[];
   awards: string[];

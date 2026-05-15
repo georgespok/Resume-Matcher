@@ -8,6 +8,7 @@ import type {
 import { getSortedSections } from '@/lib/utils/section-helpers';
 import { formatDateRange } from '@/lib/utils';
 import { SafeHtml } from './safe-html';
+import { SkillCategoryRows, hasRenderableSkillContent } from './skill-category-renderer';
 import baseStyles from './styles/_base.module.css';
 import styles from './styles/modern.module.css';
 
@@ -369,6 +370,7 @@ const AdditionalSection: React.FC<{
 
   const {
     technicalSkills = [],
+    skillCategories = [],
     languages = [],
     certificationsTraining = [],
     awards = [],
@@ -382,7 +384,7 @@ const AdditionalSection: React.FC<{
   };
 
   const hasContent =
-    technicalSkills.length > 0 ||
+    hasRenderableSkillContent({ technicalSkills, skillCategories }) ||
     languages.length > 0 ||
     certificationsTraining.length > 0 ||
     awards.length > 0;
@@ -393,12 +395,7 @@ const AdditionalSection: React.FC<{
     <div className={baseStyles['resume-section']}>
       <h3 className={styles['section-title-accent']}>{displayName}</h3>
       <div className={`${baseStyles['resume-stack']} ${baseStyles['resume-text-sm']}`}>
-        {technicalSkills.length > 0 && (
-          <div className="flex">
-            <span className="font-bold w-32 shrink-0">{mergedLabels.technicalSkills}</span>
-            <span>{technicalSkills.join(', ')}</span>
-          </div>
-        )}
+        <SkillCategoryRows technicalSkills={technicalSkills} skillCategories={skillCategories} />
         {languages.length > 0 && (
           <div className="flex">
             <span className="font-bold w-32 shrink-0">{mergedLabels.languages}</span>

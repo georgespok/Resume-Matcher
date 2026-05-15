@@ -286,19 +286,54 @@ class TestRegenerateEndpoints(unittest.IsolatedAsyncioTestCase):
         }
         mock_db_additional.update_resume.return_value = None
 
-        with patch.object(enrichment_router, "db", mock_db_additional):
+        categorized_additional = {
+            "additional": {
+                "technicalSkills": ["Python", "TypeScript"],
+                "skillCategories": [
+                    {"name": "Programming Languages", "skills": ["Python", "TypeScript"]}
+                ],
+            }
+        }
+        with (
+            patch.object(enrichment_router, "db", mock_db_additional),
+            patch.object(
+                enrichment_router,
+                "categorize_resume_skills",
+                AsyncMock(return_value=categorized_additional),
+            ) as mock_categorize,
+        ):
             result = await enrichment_router.apply_regenerated_items(resume_id, [base_item])
 
         self.assertEqual(result["updated_items"], 1)
         updated = mock_db_additional.update_resume.call_args.args[1]["processed_data"]
         self.assertEqual(updated["additional"]["technicalSkills"], ["Python", "TypeScript"])
+        self.assertEqual(
+            updated["additional"]["skillCategories"],
+            [{"name": "Programming Languages", "skills": ["Python", "TypeScript"]}],
+        )
+        mock_categorize.assert_awaited_once()
 
         # legacy technicalSkills path
         mock_db_legacy = MagicMock()
         mock_db_legacy.get_resume.return_value = {"processed_data": {"technicalSkills": ["Python"]}}
         mock_db_legacy.update_resume.return_value = None
 
-        with patch.object(enrichment_router, "db", mock_db_legacy):
+        categorized_legacy = {
+            "technicalSkills": ["Python", "TypeScript"],
+            "additional": {
+                "skillCategories": [
+                    {"name": "Programming Languages", "skills": ["Python", "TypeScript"]}
+                ]
+            },
+        }
+        with (
+            patch.object(enrichment_router, "db", mock_db_legacy),
+            patch.object(
+                enrichment_router,
+                "categorize_resume_skills",
+                AsyncMock(return_value=categorized_legacy),
+            ),
+        ):
             result = await enrichment_router.apply_regenerated_items(resume_id, [base_item])
 
         self.assertEqual(result["updated_items"], 1)

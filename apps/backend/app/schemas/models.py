@@ -179,10 +179,28 @@ class Project(BaseModel):
         return _coerce_string_list(value)
 
 
+class SkillCategory(BaseModel):
+    """Presentation grouping for technical skills."""
+
+    name: str = ""
+    skills: list[str] = Field(default_factory=list)
+
+    @field_validator("name", mode="before")
+    @classmethod
+    def _normalize_name(cls, value: Any) -> str:
+        return _coerce_text(value)
+
+    @field_validator("skills", mode="before")
+    @classmethod
+    def _normalize_skills(cls, value: Any) -> list[str]:
+        return _coerce_string_list(value)
+
+
 class AdditionalInfo(BaseModel):
     """Additional information section."""
 
     technicalSkills: list[str] = Field(default_factory=list)
+    skillCategories: list[SkillCategory] = Field(default_factory=list)
     languages: list[str] = Field(default_factory=list)
     certificationsTraining: list[str] = Field(default_factory=list)
     awards: list[str] = Field(default_factory=list)
@@ -197,6 +215,15 @@ class AdditionalInfo(BaseModel):
     @classmethod
     def _normalize_string_fields(cls, value: Any) -> list[str]:
         return _coerce_string_list(value)
+
+    @field_validator("skillCategories", mode="before")
+    @classmethod
+    def _normalize_skill_categories(cls, value: Any) -> list[Any]:
+        if value is None:
+            return []
+        if not isinstance(value, list):
+            return []
+        return [item for item in value if isinstance(item, dict)]
 
 
 # Section Metadata Models for dynamic section management

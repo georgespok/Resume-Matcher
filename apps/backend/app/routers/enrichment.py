@@ -34,6 +34,7 @@ from app.schemas.enrichment import (
     RegenerateResponse,
     RegeneratedItem,
 )
+from app.services.skill_categorizer import categorize_resume_skills
 
 logger = logging.getLogger(__name__)
 
@@ -637,6 +638,7 @@ async def apply_regenerated_items(
         return int(match.group(1))
 
     apply_failures: list[str] = []
+    skills_updated = False
 
     # Apply each regenerated item (all-or-nothing to avoid corrupting user data)
     for item in regenerated_items:
@@ -764,12 +766,14 @@ async def apply_regenerated_items(
                     apply_failures.append(item_id)
                     continue
                 additional["technicalSkills"] = new_content
+                skills_updated = True
             elif "technicalSkills" in updated_data:
                 # Fallback for legacy data structure
                 if not _lines_equal(updated_data.get("technicalSkills"), expected_original_content):
                     apply_failures.append(item_id)
                     continue
                 updated_data["technicalSkills"] = new_content
+                skills_updated = True
             else:
                 apply_failures.append(item_id)
 
@@ -784,6 +788,12 @@ async def apply_regenerated_items(
                 "Resume content changed or could not be uniquely matched. "
                 "Please regenerate and try again."
             ),
+        )
+
+    if skills_updated:
+        updated_data = await categorize_resume_skills(
+            updated_data,
+            language=get_content_language(),
         )
 
     # Update the resume in database

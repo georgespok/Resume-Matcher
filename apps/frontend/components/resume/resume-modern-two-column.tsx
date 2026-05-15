@@ -9,6 +9,7 @@ import { getSortedSections, getSectionMeta } from '@/lib/utils/section-helpers';
 import { formatDateRange } from '@/lib/utils';
 import { DynamicResumeSection } from './dynamic-resume-section';
 import { SafeHtml } from './safe-html';
+import { SkillCategoryPillGroups, hasRenderableSkillContent } from './skill-category-renderer';
 import baseStyles from './styles/_base.module.css';
 import styles from './styles/modern-two-column.module.css';
 
@@ -362,21 +363,20 @@ export const ResumeModernTwoColumn: React.FC<ResumeModernTwoColumnProps> = ({
 
           {/* Skills Section */}
           {isSectionVisible('additional') &&
-            additional?.technicalSkills &&
-            additional.technicalSkills.length > 0 && (
+            hasRenderableSkillContent({
+              technicalSkills: additional?.technicalSkills,
+              skillCategories: additional?.skillCategories,
+            }) && (
               <div className={baseStyles['resume-section']}>
                 <h3
                   className={`${baseStyles['resume-section-title-sm']} text-[var(--resume-accent-primary)]`}
                 >
                   {headingFallbacks.skills}
                 </h3>
-                <div className="flex flex-wrap gap-1">
-                  {additional.technicalSkills.map((skill, index) => (
-                    <span key={index} className={baseStyles['resume-skill-pill']}>
-                      {skill}
-                    </span>
-                  ))}
-                </div>
+                <SkillCategoryPillGroups
+                  technicalSkills={additional?.technicalSkills}
+                  skillCategories={additional?.skillCategories}
+                />
               </div>
             )}
 

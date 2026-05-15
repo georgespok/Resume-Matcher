@@ -60,6 +60,7 @@ from app.services.cover_letter import (
     generate_outreach_message,
     generate_resume_title,
 )
+from app.services.skill_categorizer import categorize_resume_skills
 from app.prompts import DEFAULT_IMPROVE_PROMPT_ID, IMPROVE_PROMPT_OPTIONS
 
 
@@ -899,6 +900,8 @@ async def _improve_preview_flow(
         if refinement_attempted:
             response_warnings.append(f"Refinement failed: {str(e)}")
 
+    improved_data = await categorize_resume_skills(improved_data, language=language)
+
     improved_text = json.dumps(improved_data, indent=2)
     preview_hash = _hash_improved_data(improved_data)
     preview_hashes = job.get("preview_hashes")
@@ -982,7 +985,6 @@ async def improve_resume_confirm_endpoint(
     detail = "Failed to confirm resume. Please try again."
     try:
         improved_data = request.improved_data.model_dump()
-        improved_text = json.dumps(improved_data, indent=2)
         # NOTE: This endpoint relies on preview-hash validation to ensure the payload matches a prior preview.
         # Stronger guarantees would require server-side preview storage or re-running the improvement.
         try:
@@ -1023,6 +1025,9 @@ async def improve_resume_confirm_endpoint(
                 status_code=400,
                 detail="Invalid improved resume data. Please retry preview.",
             )
+
+        improved_data = await categorize_resume_skills(improved_data, language=language)
+        improved_text = json.dumps(improved_data, indent=2)
 
         stage = "calculate_diff"
         response_warnings: list[str] = []
@@ -1078,7 +1083,7 @@ async def improve_resume_confirm_endpoint(
                 request_id=request_id,
                 resume_id=tailored_resume["resume_id"],
                 job_id=request.job_id,
-                resume_preview=request.improved_data,
+                resume_preview=ResumeData.model_validate(improved_data),
                 improvements=request.improvements,
                 markdownOriginal=resume["content"],
                 markdownImproved=improved_text,
@@ -1249,6 +1254,8 @@ async def improve_resume_endpoint(
             if refinement_attempted:
                 response_warnings.append(f"Refinement failed: {str(e)}")
 
+        improved_data = await categorize_resume_skills(improved_data, language=language)
+
         # Convert improved data to JSON string for storage
         improved_text = json.dumps(improved_data, indent=2)
 
@@ -1346,7 +1353,10 @@ async def update_resume_endpoint(
     if not existing:
         raise HTTPException(status_code=404, detail="Resume not found")
 
-    updated_data = resume_data.model_dump()
+    updated_data = await categorize_resume_skills(
+        resume_data.model_dump(),
+        language=get_content_language(),
+    )
     updated_content = json.dumps(updated_data, indent=2)
 
     updated = db.update_resume(
