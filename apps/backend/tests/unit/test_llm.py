@@ -4,7 +4,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.llm import _appears_truncated, _get_retry_temperature, _supports_temperature
+from app.llm import (
+    _appears_truncated,
+    _calculate_timeout,
+    _get_retry_temperature,
+    _supports_temperature,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -239,6 +244,23 @@ class TestAppearsTruncated:
         """Unknown schema types have no truncation heuristics."""
         data = {"anything": []}
         assert _appears_truncated(data, schema_type="custom") is False
+
+
+# ---------------------------------------------------------------------------
+# _calculate_timeout
+# ---------------------------------------------------------------------------
+
+
+class TestCalculateTimeout:
+    """Tests for adaptive LLM timeout calculation."""
+
+    def test_openai_json_timeout_scales_with_large_token_budget(self):
+        """8192-token JSON calls get enough time for slower GPT-5-class models."""
+        assert _calculate_timeout("json", max_tokens=8192, provider="openai") == 600
+
+    def test_completion_timeout_uses_extended_base(self):
+        """Plain completions use the configured 180s base timeout."""
+        assert _calculate_timeout("completion", max_tokens=4096, provider="openai") == 180
 
 
 # ---------------------------------------------------------------------------

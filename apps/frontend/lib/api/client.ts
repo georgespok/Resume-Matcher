@@ -31,6 +31,8 @@ function resolveRuntimeApiBase(apiBase: string): string {
 
 export const API_URL = normalizeApiUrl(process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_PUBLIC_API_URL);
 export const API_BASE = resolveRuntimeApiBase(toApiBase(API_URL));
+export const DEFAULT_API_TIMEOUT_MS = 240_000;
+export const LLM_API_TIMEOUT_MS = 900_000;
 
 /**
  * Standard fetch wrapper with common error handling.
@@ -56,8 +58,7 @@ export async function apiFetch(
     url = resolveRuntimeApiBase(normalizedEndpoint);
   }
 
-  // Matches the backend's 240s hard limit (resumes.py wait_for timeout)
-  const timeout = timeoutMs ?? 240_000;
+  const timeout = timeoutMs ?? DEFAULT_API_TIMEOUT_MS;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
 

@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import field_validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -136,6 +136,10 @@ class Settings(BaseSettings):
     llm_api_key: str = ""
     llm_api_base: str | None = None  # For Ollama or custom endpoints
     log_llm: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] = "WARNING"
+    llm_timeout_health_check_seconds: int = Field(default=30, gt=0)
+    llm_timeout_completion_seconds: int = Field(default=180, gt=0)
+    llm_timeout_json_seconds: int = Field(default=300, gt=0)
+    llm_request_timeout_seconds: int = Field(default=900, gt=0)
 
     @field_validator("llm_provider", mode="before")
     @classmethod

@@ -5,7 +5,7 @@ import re
 from enum import Enum
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 _TEXT_VALUE_KEYS = (
     "text",
@@ -19,6 +19,18 @@ _TEXT_VALUE_KEYS = (
     "label",
 )
 _BULLET_PREFIX_RE = re.compile(r"^\s*(?:[-*•]+|\d+[.)])\s*")
+_TECHNICAL_SKILL_ALIAS_KEYS = (
+    "technicalSkills",
+    "technical_skills",
+    "skills",
+    "technical",
+    "technologies",
+)
+_SKILL_CATEGORY_ALIAS_KEYS = (
+    "skillCategories",
+    "skill_categories",
+    "categories",
+)
 
 
 def _extract_text_fragments(
@@ -205,6 +217,34 @@ class AdditionalInfo(BaseModel):
     certificationsTraining: list[str] = Field(default_factory=list)
     awards: list[str] = Field(default_factory=list)
 
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_skill_aliases(cls, value: Any) -> Any:
+        """Accept common LLM aliases for the technical skills fields."""
+        if not isinstance(value, dict):
+            return value
+
+        result = dict(value)
+        if not _coerce_string_list(result.get("technicalSkills")):
+            for key in _TECHNICAL_SKILL_ALIAS_KEYS:
+                if key == "technicalSkills":
+                    continue
+                skills = _coerce_string_list(result.get(key))
+                if skills:
+                    result["technicalSkills"] = skills
+                    break
+
+        if not result.get("skillCategories"):
+            for key in _SKILL_CATEGORY_ALIAS_KEYS:
+                if key == "skillCategories":
+                    continue
+                categories = result.get(key)
+                if isinstance(categories, list):
+                    result["skillCategories"] = categories
+                    break
+
+        return result
+
     @field_validator(
         "technicalSkills",
         "languages",
@@ -379,6 +419,36 @@ class ResumeData(BaseModel):
     # NEW: Section metadata and custom sections
     sectionMeta: list[SectionMeta] = Field(default_factory=list)
     customSections: dict[str, CustomSection] = Field(default_factory=dict)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_top_level_skill_aliases(cls, value: Any) -> Any:
+        """Move top-level LLM skill aliases into additional.technicalSkills."""
+        if not isinstance(value, dict):
+            return value
+
+        result = dict(value)
+        raw_additional = result.get("additional")
+        additional = dict(raw_additional) if isinstance(raw_additional, dict) else {}
+
+        if not _coerce_string_list(additional.get("technicalSkills")):
+            for key in _TECHNICAL_SKILL_ALIAS_KEYS:
+                skills = _coerce_string_list(result.get(key))
+                if skills:
+                    additional["technicalSkills"] = skills
+                    break
+
+        if not additional.get("skillCategories"):
+            for key in _SKILL_CATEGORY_ALIAS_KEYS:
+                categories = result.get(key)
+                if isinstance(categories, list):
+                    additional["skillCategories"] = categories
+                    break
+
+        if additional:
+            result["additional"] = additional
+
+        return result
 
     @field_validator("summary", mode="before")
     @classmethod

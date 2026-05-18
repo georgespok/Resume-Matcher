@@ -2,7 +2,7 @@
  * API functions for AI-powered resume enrichment.
  */
 
-import { apiFetch, apiPost } from './client';
+import { LLM_API_TIMEOUT_MS, apiFetch, apiPost } from './client';
 
 // Types matching backend schemas
 
@@ -50,10 +50,14 @@ export interface EnhancementPreview {
  * Returns items with weak descriptions and clarifying questions.
  */
 export async function analyzeResume(resumeId: string): Promise<AnalysisResponse> {
-  const res = await apiFetch(`/enrichment/analyze/${resumeId}`, {
-    method: 'POST',
-    credentials: 'include',
-  });
+  const res = await apiFetch(
+    `/enrichment/analyze/${resumeId}`,
+    {
+      method: 'POST',
+      credentials: 'include',
+    },
+    LLM_API_TIMEOUT_MS
+  );
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
@@ -70,10 +74,14 @@ export async function generateEnhancements(
   resumeId: string,
   answers: AnswerInput[]
 ): Promise<EnhancementPreview> {
-  const res = await apiPost('/enrichment/enhance', {
-    resume_id: resumeId,
-    answers,
-  });
+  const res = await apiPost(
+    '/enrichment/enhance',
+    {
+      resume_id: resumeId,
+      answers,
+    },
+    LLM_API_TIMEOUT_MS
+  );
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
@@ -149,7 +157,7 @@ export interface RegenerateResponse {
  * Uses AI to rewrite content addressing user's concerns.
  */
 export async function regenerateItems(request: RegenerateRequest): Promise<RegenerateResponse> {
-  const res = await apiPost('/enrichment/regenerate', request);
+  const res = await apiPost('/enrichment/regenerate', request, LLM_API_TIMEOUT_MS);
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));

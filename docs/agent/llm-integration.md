@@ -104,13 +104,21 @@ The `/api/v1/health` endpoint validates LLM connectivity.
 
 ## Timeouts
 
-All LLM calls have configurable timeouts:
+LLM calls have configurable base timeouts. Completion and JSON calls scale by token budget and provider latency.
 
 | Operation | Timeout |
 |-----------|---------|
 | Health checks | 30s |
-| Completions | 120s |
-| JSON operations | 180s |
+| Completions | 180s base |
+| JSON operations | 300s base |
+| Long-running HTTP requests | 900s |
+
+Environment overrides:
+
+- `LLM_TIMEOUT_HEALTH_CHECK_SECONDS`
+- `LLM_TIMEOUT_COMPLETION_SECONDS`
+- `LLM_TIMEOUT_JSON_SECONDS`
+- `LLM_REQUEST_TIMEOUT_SECONDS`
 
 ## Key Files
 

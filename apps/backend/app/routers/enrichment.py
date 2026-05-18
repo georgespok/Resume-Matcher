@@ -9,6 +9,7 @@ from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException
 
+from app.config import settings
 from app.config_cache import get_content_language
 from app.database import db
 from app.llm import complete_json
@@ -118,7 +119,7 @@ async def analyze_resume(resume_id: str) -> AnalysisResponse:
         # Call LLM with increased max_tokens for non-English languages
         result = await asyncio.wait_for(
             complete_json(prompt, max_tokens=8192, schema_type="enrichment"),
-            timeout=180.0,  # 3-minute hard limit
+            timeout=settings.llm_request_timeout_seconds,
         )
 
         # Parse response into schema objects
@@ -223,7 +224,7 @@ async def generate_enhancements(request: EnhanceRequest) -> EnhancementPreview:
         try:
             analysis_result = await asyncio.wait_for(
                 complete_json(analysis_prompt, max_tokens=8192, schema_type="enrichment"),
-                timeout=180.0,
+                timeout=settings.llm_request_timeout_seconds,
             )
         except asyncio.TimeoutError:
             logger.error("Resume re-analysis timed out for resume %s", request.resume_id)

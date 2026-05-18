@@ -45,7 +45,7 @@ db.create_job(content, resume_id)
 | API Key Passing | Direct to litellm (avoids race conditions) |
 | JSON Mode | Auto-enabled for supported providers |
 | Retry Logic | 2 retries, temperature 0.1→0.0 |
-| Timeouts | 30s (health), 120s (completion), 180s (JSON) |
+| Timeouts | 30s health, 180s completion base, 300s JSON base, 900s long request cap |
 
 ## Prompt Guidelines
 

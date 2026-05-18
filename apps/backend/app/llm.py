@@ -35,10 +35,11 @@ litellm.drop_params = True
 # current code path sends thinking, but future-proofs the Router.
 litellm.modify_params = True
 
-# LLM timeout configuration (seconds) - base values
-LLM_TIMEOUT_HEALTH_CHECK = 30
-LLM_TIMEOUT_COMPLETION = 120
-LLM_TIMEOUT_JSON = 180  # JSON completions may take longer
+# LLM timeout configuration (seconds) - base values.
+# Individual calls scale these by token budget and provider latency.
+LLM_TIMEOUT_HEALTH_CHECK = settings.llm_timeout_health_check_seconds
+LLM_TIMEOUT_COMPLETION = settings.llm_timeout_completion_seconds
+LLM_TIMEOUT_JSON = settings.llm_timeout_json_seconds
 
 # JSON-010: JSON extraction safety limits
 MAX_JSON_EXTRACTION_RECURSION = 10

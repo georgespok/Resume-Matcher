@@ -2,7 +2,7 @@ import { ImprovedResult } from '@/components/common/resume_previewer_context';
 import type { ResumeData } from '@/components/dashboard/resume-component';
 import { type TemplateSettings } from '@/lib/types/template-settings';
 import { type Locale } from '@/i18n/config';
-import { API_BASE, apiPost, apiPatch, apiDelete, apiFetch } from './client';
+import { API_BASE, LLM_API_TIMEOUT_MS, apiPost, apiPatch, apiDelete, apiFetch } from './client';
 
 // Matches backend schemas/models.py ResumeData
 interface ProcessedResume {
@@ -118,7 +118,7 @@ async function postImprove(
 ): Promise<ImprovedResult> {
   let response: Response;
   try {
-    response = await apiPost(endpoint, payload, 240_000);
+    response = await apiPost(endpoint, payload, LLM_API_TIMEOUT_MS);
   } catch (networkError) {
     console.error(`Network error during ${endpoint}:`, networkError);
     throw networkError;
@@ -337,7 +337,11 @@ export async function downloadCoverLetterPdf(
 
 /** Generates a cover letter on-demand for a tailored resume */
 export async function generateCoverLetter(resumeId: string): Promise<string> {
-  const res = await apiPost(`/resumes/${encodeURIComponent(resumeId)}/generate-cover-letter`, {});
+  const res = await apiPost(
+    `/resumes/${encodeURIComponent(resumeId)}/generate-cover-letter`,
+    {},
+    LLM_API_TIMEOUT_MS
+  );
   if (!res.ok) {
     const text = await res.text().catch(() => '');
     throw new Error(`Failed to generate cover letter (status ${res.status}): ${text}`);
@@ -348,7 +352,11 @@ export async function generateCoverLetter(resumeId: string): Promise<string> {
 
 /** Generates an outreach message on-demand for a tailored resume */
 export async function generateOutreachMessage(resumeId: string): Promise<string> {
-  const res = await apiPost(`/resumes/${encodeURIComponent(resumeId)}/generate-outreach`, {});
+  const res = await apiPost(
+    `/resumes/${encodeURIComponent(resumeId)}/generate-outreach`,
+    {},
+    LLM_API_TIMEOUT_MS
+  );
   if (!res.ok) {
     const text = await res.text().catch(() => '');
     throw new Error(`Failed to generate outreach message (status ${res.status}): ${text}`);
@@ -359,7 +367,11 @@ export async function generateOutreachMessage(resumeId: string): Promise<string>
 
 /** Retries AI processing for a failed resume */
 export async function retryProcessing(resumeId: string): Promise<ResumeUploadResponse> {
-  const res = await apiPost(`/resumes/${encodeURIComponent(resumeId)}/retry-processing`, {});
+  const res = await apiPost(
+    `/resumes/${encodeURIComponent(resumeId)}/retry-processing`,
+    {},
+    LLM_API_TIMEOUT_MS
+  );
   if (!res.ok) {
     const text = await res.text().catch(() => '');
     throw new Error(`Failed to retry processing (status ${res.status}): ${text}`);
